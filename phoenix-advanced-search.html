@@ -1,0 +1,2987 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phoenix Search - Advanced AI-Powered Search</title>
+    <meta name="theme-color" content="#ff9d2f">
+    <link rel="icon" href="data:text/plain;base64,8J+UpQ==" type="text/plain">
+    <style>
+        /* CSS Variables - Phoenix Theme */
+        :root {
+            --phoenix-orange: #ff9d2f;
+            --phoenix-orange-dark: #ff6126;
+            --phoenix-bg-dark: #1a1d21;
+            --phoenix-bg-card: #232629;
+            --phoenix-bg-elevated: #2a2d32;
+            --phoenix-text: #ffffff;
+            --phoenix-text-muted: #a0a3a8;
+            --phoenix-border: #3a3d42;
+            --phoenix-shadow: 0 4px 20px rgba(255, 157, 47, 0.15);
+            --phoenix-shadow-elevated: 0 8px 32px rgba(26, 29, 33, 0.4);
+            --gradient-phoenix: linear-gradient(135deg, #ff9d2f, #ff6126);
+            --gradient-bg: linear-gradient(120deg, #1a1d21, #232629);
+        }
+
+        /* Reset and Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Apple Color Emoji', sans-serif;
+            background: var(--gradient-bg);
+            color: var(--phoenix-text);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Scrollbar Styling */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--phoenix-bg-dark);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--phoenix-orange);
+            border-radius: 3px;
+        }
+
+        /* Main Container */
+        .app-container {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Tab Bar */
+        .tab-bar {
+            background: var(--phoenix-bg-elevated);
+            border-bottom: 1px solid var(--phoenix-border);
+            display: flex;
+            align-items: center;
+            min-height: 50px;
+            overflow-x: auto;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+
+        .tab-bar::-webkit-scrollbar {
+            display: none;
+        }
+
+        .tab {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 16px;
+            background: transparent;
+            color: var(--phoenix-text-muted);
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border-right: 1px solid var(--phoenix-border);
+            min-width: 120px;
+            max-width: 200px;
+            position: relative;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .tab.active {
+            background: var(--phoenix-bg-card);
+            color: var(--phoenix-text);
+            border-bottom: 2px solid var(--phoenix-orange);
+        }
+
+        .tab:hover:not(.active) {
+            background: rgba(255, 157, 47, 0.1);
+            color: var(--phoenix-text);
+        }
+
+        .tab-close {
+            background: none;
+            border: none;
+            color: var(--phoenix-text-muted);
+            cursor: pointer;
+            padding: 2px;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-left: auto;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+
+        .tab:hover .tab-close {
+            opacity: 1;
+        }
+
+        .tab-close:hover {
+            background: rgba(255, 97, 38, 0.2);
+            color: var(--phoenix-orange-dark);
+        }
+
+        .new-tab-btn {
+            background: none;
+            border: none;
+            color: var(--phoenix-orange);
+            cursor: pointer;
+            padding: 12px 16px;
+            font-size: 18px;
+            transition: all 0.2s ease;
+        }
+
+        .new-tab-btn:hover {
+            background: rgba(255, 157, 47, 0.1);
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            padding: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .title {
+            font-size: 3.5rem;
+            font-weight: bold;
+            background: var(--gradient-phoenix);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 1rem;
+            letter-spacing: 2px;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: var(--phoenix-text-muted);
+            margin-bottom: 2rem;
+        }
+
+        /* Search Form */
+        .search-form {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 2rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .search-input {
+            flex: 1;
+            min-width: 300px;
+            padding: 16px 20px;
+            border: 2px solid var(--phoenix-border);
+            border-radius: 12px;
+            background: var(--phoenix-bg-card);
+            color: var(--phoenix-text);
+            font-size: 1.1rem;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .search-input:focus {
+            border-color: var(--phoenix-orange);
+            box-shadow: 0 0 0 3px rgba(255, 157, 47, 0.1);
+        }
+
+        .search-input::placeholder {
+            color: var(--phoenix-text-muted);
+        }
+
+        .engine-select {
+            padding: 16px 20px;
+            border: 2px solid var(--phoenix-border);
+            border-radius: 12px;
+            background: var(--phoenix-bg-card);
+            color: var(--phoenix-text);
+            font-size: 1rem;
+            outline: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .engine-select:focus {
+            border-color: var(--phoenix-orange);
+        }
+
+        .search-btn, .voice-btn {
+            padding: 16px 24px;
+            border: none;
+            border-radius: 12px;
+            background: var(--gradient-phoenix);
+            color: white;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .search-btn:hover, .voice-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--phoenix-shadow);
+        }
+
+        .voice-btn.listening {
+            animation: pulse 1s infinite;
+            background: var(--phoenix-orange-dark);
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        /* Quick Access */
+        .quick-access {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .quick-label {
+            color: var(--phoenix-text-muted);
+            font-size: 0.9rem;
+        }
+
+        .quick-badge {
+            background: var(--phoenix-bg-elevated);
+            color: var(--phoenix-orange);
+            padding: 6px 12px;
+            border-radius: 20px;
+            border: 1px solid var(--phoenix-border);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 0.85rem;
+        }
+
+        .quick-badge:hover {
+            background: var(--phoenix-orange);
+            color: white;
+            transform: translateY(-1px);
+        }
+
+        /* Model Selector */
+        .model-selector {
+            margin-bottom: 3rem;
+        }
+
+        .model-title {
+            text-align: center;
+            font-size: 2rem;
+            font-weight: bold;
+            background: var(--gradient-phoenix);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 1rem;
+        }
+
+        .model-description {
+            text-align: center;
+            color: var(--phoenix-text-muted);
+            margin-bottom: 2rem;
+        }
+
+        .models-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .model-card {
+            background: var(--phoenix-bg-card);
+            border: 2px solid var(--phoenix-border);
+            border-radius: 16px;
+            padding: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .model-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--phoenix-shadow-elevated);
+            border-color: var(--phoenix-orange);
+        }
+
+        .model-card.selected {
+            border-color: var(--phoenix-orange);
+            background: var(--phoenix-bg-elevated);
+            box-shadow: var(--phoenix-shadow);
+        }
+
+        .model-card.selected::after {
+            content: "✓";
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            color: var(--phoenix-orange);
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        .model-name {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: var(--phoenix-orange);
+            margin-bottom: 0.5rem;
+        }
+
+        .model-specialty {
+            font-size: 0.9rem;
+            color: var(--phoenix-orange);
+            margin-bottom: 1rem;
+            font-weight: 500;
+        }
+
+        .model-desc {
+            color: var(--phoenix-text-muted);
+            line-height: 1.5;
+            margin-bottom: 1rem;
+        }
+
+        .model-badges {
+            display: flex;
+            gap: 8px;
+        }
+
+        .model-badge {
+            background: var(--phoenix-bg-dark);
+            color: var(--phoenix-text-muted);
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            border: 1px solid var(--phoenix-border);
+        }
+
+        /* Search Results */
+        .search-results {
+            margin-top: 2rem;
+        }
+
+        .results-header {
+            background: var(--phoenix-bg-elevated);
+            border: 1px solid var(--phoenix-border);
+            border-radius: 12px;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .result-badge {
+            background: var(--phoenix-bg-card);
+            color: var(--phoenix-orange);
+            padding: 4px 12px;
+            border-radius: 16px;
+            font-size: 0.85rem;
+            border: 1px solid var(--phoenix-border);
+        }
+
+        .result-card {
+            background: var(--phoenix-bg-card);
+            border: 1px solid var(--phoenix-border);
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .result-card:hover {
+            border-color: var(--phoenix-orange);
+            background: var(--phoenix-bg-elevated);
+            transform: translateY(-1px);
+        }
+
+        .result-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--phoenix-text);
+            margin-bottom: 0.5rem;
+            text-decoration: none;
+            display: block;
+        }
+
+        .result-title:hover {
+            color: var(--phoenix-orange);
+        }
+
+        .result-url {
+            color: var(--phoenix-orange);
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .result-snippet {
+            color: var(--phoenix-text-muted);
+            line-height: 1.6;
+            margin-bottom: 1rem;
+        }
+
+        .result-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .result-action {
+            background: none;
+            border: 1px solid var(--phoenix-border);
+            color: var(--phoenix-text-muted);
+            padding: 6px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 0.85rem;
+        }
+
+        .result-action:hover {
+            background: var(--phoenix-orange);
+            color: white;
+            border-color: var(--phoenix-orange);
+        }
+
+        /* Chat Assistant */
+        .chat-assistant {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        .chat-toggle {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: var(--gradient-phoenix);
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            box-shadow: var(--phoenix-shadow);
+            transition: all 0.3s ease;
+        }
+
+        .chat-toggle:hover {
+            transform: scale(1.1);
+        }
+
+        .chat-panel {
+            position: absolute;
+            bottom: 80px;
+            right: 0;
+            width: 380px;
+            height: 500px;
+            background: var(--phoenix-bg-card);
+            border: 1px solid var(--phoenix-border);
+            border-radius: 16px;
+            box-shadow: var(--phoenix-shadow-elevated);
+            display: none;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .chat-panel.active {
+            display: flex;
+        }
+
+        .chat-header {
+            background: var(--phoenix-bg-elevated);
+            padding: 1rem;
+            border-bottom: 1px solid var(--phoenix-border);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .chat-avatar {
+            width: 32px;
+            height: 32px;
+            background: var(--gradient-phoenix);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 0.9rem;
+        }
+
+        .chat-info h3 {
+            font-size: 1rem;
+            color: var(--phoenix-text);
+            margin-bottom: 2px;
+        }
+
+        .chat-info p {
+            font-size: 0.8rem;
+            color: var(--phoenix-text-muted);
+        }
+
+        .chat-messages {
+            flex: 1;
+            padding: 1rem;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .message {
+            display: flex;
+            gap: 8px;
+            max-width: 85%;
+        }
+
+        .message.user {
+            align-self: flex-end;
+            flex-direction: row-reverse;
+        }
+
+        .message-avatar {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            flex-shrink: 0;
+        }
+
+        .message.bot .message-avatar {
+            background: var(--gradient-phoenix);
+            color: white;
+        }
+
+        .message.user .message-avatar {
+            background: var(--phoenix-bg-elevated);
+            color: var(--phoenix-text);
+        }
+
+        .message-content {
+            background: var(--phoenix-bg-elevated);
+            padding: 8px 12px;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+
+        .message.user .message-content {
+            background: var(--phoenix-orange);
+            color: white;
+        }
+
+        .chat-input-form {
+            padding: 1rem;
+            border-top: 1px solid var(--phoenix-border);
+            display: flex;
+            gap: 8px;
+        }
+
+        .chat-input {
+            flex: 1;
+            padding: 8px 12px;
+            border: 1px solid var(--phoenix-border);
+            border-radius: 20px;
+            background: var(--phoenix-bg-elevated);
+            color: var(--phoenix-text);
+            outline: none;
+            font-size: 0.9rem;
+        }
+
+        .chat-input:focus {
+            border-color: var(--phoenix-orange);
+        }
+
+        .chat-send {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: var(--gradient-phoenix);
+            border: none;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Loading Animation */
+        .loading {
+            display: flex;
+            gap: 4px;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .loading-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--phoenix-orange);
+            border-radius: 50%;
+            animation: loading 1s infinite ease-in-out;
+        }
+
+        .loading-dot:nth-child(2) { animation-delay: 0.2s; }
+        .loading-dot:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes loading {
+            0%, 100% { transform: scale(1); opacity: 0.7; }
+            50% { transform: scale(1.2); opacity: 1; }
+        }
+
+        @keyframes slideInRight {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideOutRight {
+            from {
+                transform: translateX(0);
+                opacity: 1;
+            }
+            to {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 1rem;
+            }
+
+            .title {
+                font-size: 2.5rem;
+            }
+
+            .search-form {
+                flex-direction: column;
+            }
+
+            .search-input {
+                min-width: 100%;
+            }
+
+            .models-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .chat-panel {
+                width: 320px;
+                height: 400px;
+            }
+
+            .results-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+        }
+
+        /* Browser Features Styles */
+        .browser-toolbar {
+            background: var(--phoenix-bg-elevated);
+            border-bottom: 1px solid var(--phoenix-border);
+            padding: 8px 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .toolbar-btn {
+            background: var(--phoenix-bg-card);
+            border: 1px solid var(--phoenix-border);
+            color: var(--phoenix-text);
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .toolbar-btn:hover {
+            background: var(--phoenix-bg-elevated);
+            border-color: var(--phoenix-orange);
+            color: var(--phoenix-orange);
+        }
+
+        .toolbar-btn.active {
+            background: var(--phoenix-orange);
+            color: white;
+            border-color: var(--phoenix-orange);
+        }
+
+        .browser-sidebar {
+            position: fixed;
+            left: -300px;
+            top: 0;
+            width: 300px;
+            height: 100vh;
+            background: var(--phoenix-bg-card);
+            border-right: 2px solid var(--phoenix-border);
+            transition: left 0.3s ease;
+            z-index: 1000;
+            overflow-y: auto;
+        }
+
+        .browser-sidebar.active {
+            left: 0;
+        }
+
+        .sidebar-header {
+            background: var(--phoenix-bg-elevated);
+            padding: 1rem;
+            border-bottom: 1px solid var(--phoenix-border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .sidebar-content {
+            padding: 1rem;
+        }
+
+        .bookmark-item, .history-item {
+            background: var(--phoenix-bg-elevated);
+            border: 1px solid var(--phoenix-border);
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .bookmark-item:hover, .history-item:hover {
+            border-color: var(--phoenix-orange);
+            background: var(--phoenix-bg-card);
+        }
+
+        .bookmark-title, .history-title {
+            font-weight: 600;
+            color: var(--phoenix-text);
+            margin-bottom: 4px;
+            font-size: 0.9rem;
+        }
+
+        .bookmark-url, .history-url {
+            color: var(--phoenix-text-muted);
+            font-size: 0.8rem;
+            word-break: break-all;
+        }
+
+        .find-bar {
+            position: fixed;
+            top: 60px;
+            right: 20px;
+            background: var(--phoenix-bg-elevated);
+            border: 2px solid var(--phoenix-orange);
+            border-radius: 8px;
+            padding: 8px 12px;
+            display: none;
+            z-index: 1000;
+            box-shadow: var(--phoenix-shadow);
+        }
+
+        .find-bar.active {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .find-input {
+            background: var(--phoenix-bg-card);
+            border: 1px solid var(--phoenix-border);
+            color: var(--phoenix-text);
+            padding: 4px 8px;
+            border-radius: 4px;
+            outline: none;
+            width: 200px;
+        }
+
+        .zoom-controls {
+            position: fixed;
+            top: 100px;
+            right: 20px;
+            background: var(--phoenix-bg-elevated);
+            border: 2px solid var(--phoenix-border);
+            border-radius: 8px;
+            padding: 8px;
+            display: none;
+            z-index: 1000;
+            box-shadow: var(--phoenix-shadow);
+        }
+
+        .zoom-controls.active {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .security-indicator {
+            position: fixed;
+            top: 140px;
+            right: 20px;
+            background: var(--phoenix-bg-elevated);
+            border: 2px solid;
+            border-radius: 8px;
+            padding: 8px 12px;
+            display: none;
+            z-index: 1000;
+            box-shadow: var(--phoenix-shadow);
+            font-size: 0.85rem;
+        }
+
+        .security-indicator.secure {
+            border-color: #44ff44;
+            color: #44ff44;
+        }
+
+        .security-indicator.warning {
+            border-color: #ffaa00;
+            color: #ffaa00;
+        }
+
+        .security-indicator.danger {
+            border-color: #ff4444;
+            color: #ff4444;
+        }
+
+        .reader-mode {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: #f5f5f5;
+            color: #333;
+            z-index: 10000;
+            display: none;
+            overflow-y: auto;
+            padding: 2rem;
+        }
+
+        .reader-mode.active {
+            display: block;
+        }
+
+        .reader-content {
+            max-width: 800px;
+            margin: 0 auto;
+            font-family: 'Georgia', serif;
+            line-height: 1.8;
+            font-size: 1.1rem;
+        }
+
+        .floating-tools {
+            position: fixed;
+            bottom: 80px;
+            right: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            z-index: 999;
+        }
+
+        .floating-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: var(--phoenix-bg-elevated);
+            border: 2px solid var(--phoenix-border);
+            color: var(--phoenix-text);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+            box-shadow: var(--phoenix-shadow);
+        }
+
+        .floating-btn:hover {
+            background: var(--phoenix-orange);
+            color: white;
+            border-color: var(--phoenix-orange);
+            transform: scale(1.1);
+        }
+
+        /* Utility Classes */
+        .hidden { display: none !important; }
+        .flex { display: flex; }
+        .items-center { align-items: center; }
+        .gap-2 { gap: 0.5rem; }
+        .text-center { text-align: center; }
+        .mb-4 { margin-bottom: 1rem; }
+        .p-4 { padding: 1rem; }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Tab Bar -->
+        <div class="tab-bar" id="tabBar">
+            <!-- Tabs will be dynamically added here -->
+        </div>
+
+        <!-- Browser Toolbar -->
+        <div class="browser-toolbar">
+            <!-- Navigation Controls -->
+            <button class="toolbar-btn" onclick="goBack()" title="Back (Alt+←)">
+                <span>←</span>
+            </button>
+            <button class="toolbar-btn" onclick="goForward()" title="Forward (Alt+→)">
+                <span>→</span>
+            </button>
+            <button class="toolbar-btn" onclick="refreshPage()" title="Refresh (Ctrl+R)">
+                <span>🔄</span>
+            </button>
+            <button class="toolbar-btn" onclick="goHome()" title="Home">
+                <span>🏠</span>
+            </button>
+
+            <!-- Divider -->
+            <div style="width: 1px; height: 20px; background: var(--phoenix-border); margin: 0 8px;"></div>
+
+            <!-- Browser Features -->
+            <button class="toolbar-btn" onclick="toggleBookmarks()" title="Bookmarks (Ctrl+Shift+B)">
+                <span>⭐</span> Bookmarks
+            </button>
+            <button class="toolbar-btn" onclick="toggleHistory()" title="History (Ctrl+H)">
+                <span>📚</span> History
+            </button>
+            <button class="toolbar-btn" onclick="toggleDownloads()" title="Downloads (Ctrl+J)">
+                <span>💾</span> Downloads
+            </button>
+
+            <!-- Divider -->
+            <div style="width: 1px; height: 20px; background: var(--phoenix-border); margin: 0 8px;"></div>
+
+            <!-- Tools -->
+            <button class="toolbar-btn" onclick="toggleFindBar()" title="Find in page (Ctrl+F)">
+                <span>🔍</span> Find
+            </button>
+            <button class="toolbar-btn" onclick="toggleZoomControls()" title="Zoom">
+                <span>🔍</span> Zoom
+            </button>
+            <button class="toolbar-btn" onclick="takeScreenshot()" title="Screenshot">
+                <span>📸</span> Screenshot
+            </button>
+            <button class="toolbar-btn" onclick="generateQR()" title="QR Code">
+                <span>📱</span> QR
+            </button>
+            <button class="toolbar-btn" onclick="toggleReaderMode()" title="Reader Mode">
+                <span>📖</span> Reader
+            </button>
+            <button class="toolbar-btn" onclick="translatePage()" title="Translate">
+                <span>🌐</span> Translate
+            </button>
+            <button class="toolbar-btn" onclick="printPage()" title="Print (Ctrl+P)">
+                <span>🖨️</span> Print
+            </button>
+            <button class="toolbar-btn" onclick="toggleDevTools()" title="Developer Tools (F12)">
+                <span>🛠️</span> DevTools
+            </button>
+
+            <!-- Theme Toggle -->
+            <button class="toolbar-btn" onclick="toggleTheme()" title="Toggle Theme">
+                <span id="themeIcon">🌙</span>
+            </button>
+
+            <!-- Security Indicator -->
+            <button class="toolbar-btn" onclick="showSecurity()" title="Security Info">
+                <span id="securityIcon">🔒</span> Secure
+            </button>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Header -->
+            <div class="header" id="header">
+                <h1 class="title">Phoenix Search 🔥</h1>
+                <p class="subtitle">AI-powered search with advanced models and intelligent assistance</p>
+            </div>
+
+            <!-- Search Form -->
+            <form class="search-form" id="searchForm">
+                <input type="text" class="search-input" id="searchInput" placeholder="Search with Phoenix AI..." autocomplete="off">
+                <select class="engine-select" id="engineSelect">
+                    <option value="bing">Bing</option>
+                    <option value="google">Google</option>
+                    <option value="duckduckgo">DuckDuckGo</option>
+                    <option value="brave">Brave</option>
+                </select>
+                <button type="submit" class="search-btn">
+                    <span>🔍</span>
+                    Search
+                </button>
+                <button type="button" class="voice-btn" id="voiceBtn">
+                    <span>🎤</span>
+                    Voice
+                </button>
+            </form>
+
+            <!-- Quick Access -->
+            <div class="quick-access">
+                <span class="quick-label">Quick:</span>
+                <div class="quick-badge" data-query="AI news today">AI News</div>
+                <div class="quick-badge" data-query="latest tech trends">Tech Trends</div>
+                <div class="quick-badge" data-query="programming tutorials">Coding Help</div>
+                <div class="quick-badge" data-query="scientific research">Research</div>
+                <div class="quick-badge" data-query="creative writing ideas">Creative Ideas</div>
+            </div>
+
+            <!-- Model Selector -->
+            <div class="model-selector" id="modelSelector">
+                <h2 class="model-title">Choose Your Phoenix AI Model</h2>
+                <p class="model-description">Each model is specialized for different types of searches and tasks</p>
+                <div class="models-grid">
+                    <div class="model-card selected" data-model="Phoenix-1">
+                        <div class="model-name">🔥 Phoenix-1</div>
+                        <div class="model-specialty">General Knowledge</div>
+                        <div class="model-desc">General purpose AI for everyday searches and quick answers. Perfect for most queries with fast, accurate results.</div>
+                        <div class="model-badges">
+                            <span class="model-badge">Fast Speed</span>
+                            <span class="model-badge">High Accuracy</span>
+                        </div>
+                    </div>
+                    
+                    <div class="model-card" data-model="Phoenix-2">
+                        <div class="model-name">🧠 Phoenix-2</div>
+                        <div class="model-specialty">Creative Thinking</div>
+                        <div class="model-desc">Creative AI specialized in brainstorming and innovative ideas. Best for artistic, creative, and out-of-the-box thinking.</div>
+                        <div class="model-badges">
+                            <span class="model-badge">Medium Speed</span>
+                            <span class="model-badge">High Creativity</span>
+                        </div>
+                    </div>
+                    
+                    <div class="model-card" data-model="Phoenix-3">
+                        <div class="model-name">💻 Phoenix-3</div>
+                        <div class="model-specialty">Technical & Code</div>
+                        <div class="model-desc">Technical expert for code, engineering, and development queries. Specialized in programming languages and technical documentation.</div>
+                        <div class="model-badges">
+                            <span class="model-badge">Medium Speed</span>
+                            <span class="model-badge">Technical Focus</span>
+                        </div>
+                    </div>
+                    
+                    <div class="model-card" data-model="Phoenix-4">
+                        <div class="model-name">📚 Phoenix-4</div>
+                        <div class="model-specialty">Research & Analysis</div>
+                        <div class="model-desc">Research assistant for academic papers and in-depth analysis. Perfect for scholarly research and detailed information.</div>
+                        <div class="model-badges">
+                            <span class="model-badge">Slower Speed</span>
+                            <span class="model-badge">Deep Analysis</span>
+                        </div>
+                    </div>
+                    
+                    <div class="model-card" data-model="Phoenix-5">
+                        <div class="model-name">⚡ Phoenix-5</div>
+                        <div class="model-specialty">Quick Facts</div>
+                        <div class="model-desc">Lightning-fast AI for quick facts and instant lookups. Optimized for speed and concise, factual answers.</div>
+                        <div class="model-badges">
+                            <span class="model-badge">Ultra Fast</span>
+                            <span class="model-badge">Fact Focus</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Search Results -->
+            <div class="search-results hidden" id="searchResults">
+                <div class="results-header">
+                    <div class="flex items-center gap-2">
+                        <span style="color: var(--phoenix-text-muted);">Engine:</span>
+                        <span class="result-badge" id="currentEngine">Bing</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span style="color: var(--phoenix-text-muted);">Model:</span>
+                        <span class="result-badge" id="currentModel">Phoenix-1</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span style="color: var(--phoenix-text-muted);">⏱️</span>
+                        <span style="color: var(--phoenix-text-muted);" id="resultCount">0 results</span>
+                    </div>
+                </div>
+                <div id="resultsContainer">
+                    <!-- Results will be populated here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Browser Sidebar -->
+        <div class="browser-sidebar" id="browserSidebar">
+            <div class="sidebar-header">
+                <h3 id="sidebarTitle">Bookmarks</h3>
+                <button onclick="closeSidebar()" style="background: none; border: none; color: var(--phoenix-text-muted); cursor: pointer; font-size: 1.2rem;">×</button>
+            </div>
+            <div class="sidebar-content" id="sidebarContent">
+                <!-- Content will be dynamically loaded -->
+            </div>
+        </div>
+
+        <!-- Find Bar -->
+        <div class="find-bar" id="findBar">
+            <input type="text" class="find-input" id="findInput" placeholder="Find in page...">
+            <button onclick="findNext()" style="background: none; border: none; color: var(--phoenix-orange); cursor: pointer;">↓</button>
+            <button onclick="findPrev()" style="background: none; border: none; color: var(--phoenix-orange); cursor: pointer;">↑</button>
+            <button onclick="closeFindBar()" style="background: none; border: none; color: var(--phoenix-text-muted); cursor: pointer;">×</button>
+        </div>
+
+        <!-- Zoom Controls -->
+        <div class="zoom-controls" id="zoomControls">
+            <button onclick="zoomIn()" class="toolbar-btn" style="margin: 0;">🔍+ Zoom In</button>
+            <div style="text-align: center; margin: 4px 0; color: var(--phoenix-text);" id="zoomLevel">100%</div>
+            <button onclick="zoomOut()" class="toolbar-btn" style="margin: 0;">🔍− Zoom Out</button>
+            <button onclick="resetZoom()" class="toolbar-btn" style="margin: 0;">↺ Reset</button>
+        </div>
+
+        <!-- Security Indicator -->
+        <div class="security-indicator secure" id="securityIndicator">
+            🔒 Secure Connection
+        </div>
+
+        <!-- Reader Mode -->
+        <div class="reader-mode" id="readerMode">
+            <div class="reader-content">
+                <div style="text-align: center; margin-bottom: 2rem;">
+                    <button onclick="toggleReaderMode()" style="background: var(--phoenix-orange); color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer;">× Exit Reader Mode</button>
+                </div>
+                <div id="readerContent">
+                    <h1>Phoenix Search - Reader Mode</h1>
+                    <p>This is a clean, distraction-free reading experience. The content has been optimized for readability with improved typography and spacing.</p>
+                    <p>Reader mode removes ads, navigation elements, and other distractions to help you focus on the content that matters.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Floating Tools -->
+        <div class="floating-tools">
+            <button class="floating-btn" onclick="scrollToTop()" title="Scroll to Top">
+                ↑
+            </button>
+            <button class="floating-btn" onclick="togglePictureInPicture()" title="Picture in Picture">
+                📺
+            </button>
+            <button class="floating-btn" onclick="copyPageURL()" title="Copy Page URL">
+                🔗
+            </button>
+            <button class="floating-btn" onclick="shareCurrentPage()" title="Share Page">
+                📤
+            </button>
+        </div>
+
+        <!-- Chat Assistant -->
+        <div class="chat-assistant">
+            <div class="chat-panel" id="chatPanel">
+                <div class="chat-header">
+                    <div class="chat-avatar">🤖</div>
+                    <div class="chat-info">
+                        <h3>Phoenix AI Assistant</h3>
+                        <p id="chatModel">Phoenix-1</p>
+                    </div>
+                    <button class="chat-close" id="chatClose" style="margin-left: auto; background: none; border: none; color: var(--phoenix-text-muted); cursor: pointer; padding: 4px;">✕</button>
+                </div>
+                <div class="chat-messages" id="chatMessages">
+                    <div class="message bot">
+                        <div class="message-avatar">🤖</div>
+                        <div class="message-content">
+                            Hi! I'm Phoenix AI. I'm here to help with your search queries and provide detailed explanations. What would you like to know?
+                        </div>
+                    </div>
+                </div>
+                <form class="chat-input-form" id="chatForm">
+                    <input type="text" class="chat-input" id="chatInput" placeholder="Ask Phoenix AI..." autocomplete="off">
+                    <button type="submit" class="chat-send">📤</button>
+                </form>
+            </div>
+            <button class="chat-toggle" id="chatToggle">💬</button>
+        </div>
+    </div>
+
+    <script>
+        // Global State
+        let tabs = [];
+        let activeTabId = null;
+        let selectedModel = 'Phoenix-1';
+        let isVoiceListening = false;
+        let searchHistory = [];
+        let chatMessages = [];
+        let bookmarks = [];
+        let browsingHistory = [];
+        let downloads = [];
+        let currentZoom = 100;
+        let isDarkTheme = true;
+        let currentSidebar = null;
+
+        // Initialize Application
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeApp();
+            setupEventListeners();
+            loadSavedData();
+            requestMicrophonePermission();
+        });
+
+        // Request microphone permission on page load
+        function requestMicrophonePermission() {
+            if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+                navigator.mediaDevices.getUserMedia({ audio: true })
+                    .then(function(stream) {
+                        // Permission granted, stop the stream
+                        stream.getTracks().forEach(track => track.stop());
+                        console.log('🎤 Microphone permission granted');
+                        showNotification('🎤 Microphone ready for voice search!', 'success');
+                    })
+                    .catch(function(error) {
+                        console.log('🎤 Microphone permission denied:', error);
+                        showNotification('🎤 For voice search, please allow microphone access when prompted', 'warning');
+                    });
+            }
+        }
+
+        function initializeApp() {
+            // Create initial tab
+            const initialTab = createTab('New Search', '', selectedModel, 'bing');
+            tabs.push(initialTab);
+            activeTabId = initialTab.id;
+            renderTabs();
+        }
+
+        function createTab(title, query = '', model = selectedModel, engine = 'bing') {
+            return {
+                id: Date.now() + Math.random(),
+                title: title || 'New Search',
+                query: query,
+                model: model,
+                engine: engine,
+                timestamp: new Date(),
+                hasResults: false
+            };
+        }
+
+        function setupEventListeners() {
+            // Search form
+            document.getElementById('searchForm').addEventListener('submit', handleSearch);
+            
+            // Voice search
+            document.getElementById('voiceBtn').addEventListener('click', handleVoiceSearch);
+            
+            // Model selection
+            document.querySelectorAll('.model-card').forEach(card => {
+                card.addEventListener('click', () => {
+                    const model = card.dataset.model;
+                    selectModel(model);
+                });
+            });
+
+            // Quick access badges
+            document.querySelectorAll('.quick-badge').forEach(badge => {
+                badge.addEventListener('click', () => {
+                    const query = badge.dataset.query;
+                    document.getElementById('searchInput').value = query;
+                    performSearch(query);
+                });
+            });
+
+            // Chat functionality
+            document.getElementById('chatToggle').addEventListener('click', toggleChat);
+            document.getElementById('chatClose').addEventListener('click', toggleChat);
+            document.getElementById('chatForm').addEventListener('submit', handleChatMessage);
+
+            // Tab functionality
+            document.addEventListener('click', function(e) {
+                if (e.target.matches('.new-tab-btn')) {
+                    addNewTab();
+                } else if (e.target.matches('.tab-close')) {
+                    e.stopPropagation();
+                    const tabId = e.target.closest('.tab').dataset.tabId;
+                    closeTab(tabId);
+                } else if (e.target.matches('.tab') || e.target.closest('.tab')) {
+                    const tab = e.target.matches('.tab') ? e.target : e.target.closest('.tab');
+                    const tabId = tab.dataset.tabId;
+                    switchToTab(tabId);
+                }
+            });
+
+            // Keyboard shortcuts
+            document.addEventListener('keydown', handleKeyboardShortcuts);
+
+            // Find bar functionality
+            document.getElementById('findInput').addEventListener('input', performFind);
+            document.getElementById('findInput').addEventListener('keydown', function(e) {
+                if (e.key === 'Enter') {
+                    if (e.shiftKey) {
+                        findPrev();
+                    } else {
+                        findNext();
+                    }
+                } else if (e.key === 'Escape') {
+                    closeFindBar();
+                }
+            });
+
+            // Load saved browser data
+            loadBrowserData();
+        }
+
+        function handleSearch(e) {
+            e.preventDefault();
+            const query = document.getElementById('searchInput').value.trim();
+            if (query) {
+                performSearch(query);
+            }
+        }
+
+        function performSearch(query) {
+            const engine = document.getElementById('engineSelect').value;
+            
+            // Update active tab
+            if (activeTabId) {
+                const tabIndex = tabs.findIndex(tab => tab.id === activeTabId);
+                if (tabIndex !== -1) {
+                    tabs[tabIndex].query = query;
+                    tabs[tabIndex].title = query.length > 20 ? query.slice(0, 20) + '...' : query;
+                    tabs[tabIndex].engine = engine;
+                    tabs[tabIndex].model = selectedModel;
+                    tabs[tabIndex].hasResults = true;
+                    renderTabs();
+                }
+            }
+
+            // Add to search history
+            if (!searchHistory.includes(query)) {
+                searchHistory.unshift(query);
+                searchHistory = searchHistory.slice(0, 10);
+            }
+
+            // Add Phoenix model prefix for enhanced search
+            const modelPrefix = `[${selectedModel}] `;
+            const enhancedQuery = modelPrefix + query;
+
+            // Open real search engine in new tab/window
+            let searchUrl;
+            switch(engine) {
+                case 'bing':
+                    searchUrl = `https://www.bing.com/search?q=${encodeURIComponent(enhancedQuery)}`;
+                    break;
+                case 'google':
+                    searchUrl = `https://www.google.com/search?q=${encodeURIComponent(enhancedQuery)}`;
+                    break;
+                case 'duckduckgo':
+                    searchUrl = `https://duckduckgo.com/?q=${encodeURIComponent(enhancedQuery)}`;
+                    break;
+                case 'brave':
+                    searchUrl = `https://search.brave.com/search?q=${encodeURIComponent(enhancedQuery)}`;
+                    break;
+                default:
+                    searchUrl = `https://www.google.com/search?q=${encodeURIComponent(enhancedQuery)}`;
+            }
+
+            // Show search options with iframe capability
+            showSearchOptions(query, engine, selectedModel, searchUrl);
+
+            // Hide model selector and show results
+            document.getElementById('modelSelector').classList.add('hidden');
+            document.getElementById('header').classList.add('hidden');
+
+            saveData();
+        }
+
+        function showSearchOptions(query, engine, model, searchUrl) {
+            const resultsContainer = document.getElementById('searchResults');
+            const currentEngine = document.getElementById('currentEngine');
+            const currentModel = document.getElementById('currentModel');
+            const resultCount = document.getElementById('resultCount');
+            const resultsContent = document.getElementById('resultsContainer');
+
+            currentEngine.textContent = engine.charAt(0).toUpperCase() + engine.slice(1);
+            currentModel.textContent = model;
+            
+            resultsContainer.classList.remove('hidden');
+
+            // Create search options interface
+            resultsContent.innerHTML = `
+                <div style="margin-bottom: 2rem;">
+                    <div style="background: var(--phoenix-bg-elevated); border-radius: 16px; border: 2px solid var(--phoenix-orange); padding: 1.5rem;">
+                        <div style="text-align: center; margin-bottom: 1.5rem;">
+                            <h3 style="color: var(--phoenix-orange); margin-bottom: 0.5rem;">🔍 Search with ${engine.charAt(0).toUpperCase() + engine.slice(1)}</h3>
+                            <p style="color: var(--phoenix-text-muted); font-size: 0.9rem;">
+                                <strong>Enhanced Query:</strong> "${query}" (powered by ${model})
+                            </p>
+                        </div>
+                        
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1.5rem;">
+                            <button onclick="openInNewTab('${searchUrl}')" style="
+                                padding: 12px 20px;
+                                background: var(--gradient-phoenix);
+                                color: white;
+                                border: none;
+                                border-radius: 12px;
+                                font-weight: 600;
+                                cursor: pointer;
+                                transition: all 0.3s ease;
+                                display: flex;
+                                align-items: center;
+                                justify-content: center;
+                                gap: 8px;
+                            " onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
+                                🚀 Open in New Tab
+                            </button>
+                            
+                            <button onclick="showEmbeddedSearch('${query}', '${engine}', '${model}', '${searchUrl}')" style="
+                                padding: 12px 20px;
+                                background: var(--phoenix-bg-card);
+                                color: var(--phoenix-orange);
+                                border: 2px solid var(--phoenix-orange);
+                                border-radius: 12px;
+                                font-weight: 600;
+                                cursor: pointer;
+                                transition: all 0.3s ease;
+                                display: flex;
+                                align-items: center;
+                                justify-content: center;
+                                gap: 8px;
+                            " onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
+                                📱 Embed Here
+                            </button>
+                            
+                            <button onclick="openInSidebar('${query}', '${engine}', '${model}', '${searchUrl}')" style="
+                                padding: 12px 20px;
+                                background: var(--phoenix-bg-card);
+                                color: var(--phoenix-text);
+                                border: 2px solid var(--phoenix-border);
+                                border-radius: 12px;
+                                font-weight: 600;
+                                cursor: pointer;
+                                transition: all 0.3s ease;
+                                display: flex;
+                                align-items: center;
+                                justify-content: center;
+                                gap: 8px;
+                            " onmouseover="this.style.backgroundColor='var(--phoenix-bg-elevated)'" onmouseout="this.style.backgroundColor='var(--phoenix-bg-card)'">
+                                📋 Split View
+                            </button>
+                        </div>
+                        
+                        <div style="text-align: center;">
+                            <p style="color: var(--phoenix-text-muted); font-size: 0.85rem; margin: 0;">
+                                💡 Choose how you want to view your search results
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            resultCount.textContent = 'Choose search method';
+            
+            // Auto-open in new tab after 3 seconds if no choice made
+            setTimeout(() => {
+                showNotification('⏰ Auto-opening in new tab...', 'info');
+                setTimeout(() => {
+                    openInNewTab(searchUrl);
+                }, 1000);
+            }, 3000);
+        }
+
+        function openInNewTab(searchUrl) {
+            try {
+                const newWindow = window.open(searchUrl, '_blank');
+                if (!newWindow) {
+                    showNotification('❌ Popup blocked! Please allow popups or try embed option.', 'error');
+                } else {
+                    showNotification('🚀 Opened search in new tab!', 'success');
+                }
+            } catch (error) {
+                console.error('Error opening new tab:', error);
+                showNotification('❌ Failed to open new tab. Try the embed option.', 'error');
+            }
+        }
+
+        function showEmbeddedSearch(query, engine, model, searchUrl) {
+            const resultsContent = document.getElementById('resultsContainer');
+            const resultCount = document.getElementById('resultCount');
+            
+            showNotification(`📱 Loading embedded ${engine} search...`, 'info');
+
+            resultsContent.innerHTML = `
+                <div style="margin-bottom: 1rem;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 1rem; background: var(--phoenix-bg-elevated); border-radius: 12px; border: 2px solid var(--phoenix-orange);">
+                        <div>
+                            <h3 style="color: var(--phoenix-orange); margin: 0; font-size: 1.1rem;">🌐 ${engine.charAt(0).toUpperCase() + engine.slice(1)} Search (Embedded)</h3>
+                            <p style="color: var(--phoenix-text-muted); margin: 4px 0 0 0; font-size: 0.85rem;">"${query}" powered by ${model}</p>
+                        </div>
+                        <div style="display: flex; gap: 8px;">
+                            <button onclick="toggleIframeFullscreen()" style="
+                                padding: 6px 12px;
+                                background: var(--phoenix-orange);
+                                color: white;
+                                border: none;
+                                border-radius: 6px;
+                                font-size: 0.8rem;
+                                cursor: pointer;
+                            ">⛶ Fullscreen</button>
+                            <button onclick="refreshIframe()" style="
+                                padding: 6px 12px;
+                                background: var(--phoenix-bg-card);
+                                color: var(--phoenix-orange);
+                                border: 1px solid var(--phoenix-orange);
+                                border-radius: 6px;
+                                font-size: 0.8rem;
+                                cursor: pointer;
+                            ">🔄 Refresh</button>
+                            <button onclick="closeEmbedded()" style="
+                                padding: 6px 12px;
+                                background: var(--phoenix-bg-card);
+                                color: var(--phoenix-text-muted);
+                                border: 1px solid var(--phoenix-border);
+                                border-radius: 6px;
+                                font-size: 0.8rem;
+                                cursor: pointer;
+                            ">✕ Close</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="iframeContainer" style="border-radius: 12px; overflow: hidden; border: 2px solid var(--phoenix-border); position: relative;">
+                    <div id="iframeLoader" style="
+                        position: absolute;
+                        top: 0;
+                        left: 0;
+                        right: 0;
+                        bottom: 0;
+                        background: var(--phoenix-bg-card);
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        z-index: 10;
+                    ">
+                        <div style="text-align: center;">
+                            <div class="loading" style="margin-bottom: 1rem;">
+                                <div class="loading-dot"></div>
+                                <div class="loading-dot"></div>
+                                <div class="loading-dot"></div>
+                            </div>
+                            <p style="color: var(--phoenix-text-muted);">Loading search results...</p>
+                        </div>
+                    </div>
+                    <iframe 
+                        id="searchIframe"
+                        src="${searchUrl}" 
+                        style="width: 100%; height: 70vh; border: none; background: white;" 
+                        frameborder="0"
+                        sandbox="allow-same-origin allow-scripts allow-forms allow-popups allow-popups-to-escape-sandbox allow-top-navigation"
+                        loading="lazy"
+                        onload="hideIframeLoader()">
+                    </iframe>
+                </div>
+                
+                <div style="margin-top: 1rem; text-align: center;">
+                    <p style="color: var(--phoenix-text-muted); font-size: 0.85rem;">
+                        💡 <strong>Tips:</strong> Use fullscreen for better viewing • Double-click iframe to exit fullscreen • Some features may be limited in embedded mode
+                    </p>
+                </div>
+            `;
+
+            resultCount.textContent = `Embedded ${engine} results`;
+        }
+
+        function openInSidebar(query, engine, model, searchUrl) {
+            const resultsContent = document.getElementById('resultsContainer');
+            const resultCount = document.getElementById('resultCount');
+            
+            showNotification(`📋 Loading split view for ${engine}...`, 'info');
+
+            resultsContent.innerHTML = `
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; height: 80vh;">
+                    <!-- Left Panel: Mock Results -->
+                    <div style="background: var(--phoenix-bg-card); border-radius: 12px; border: 2px solid var(--phoenix-border); overflow: hidden;">
+                        <div style="padding: 1rem; background: var(--phoenix-bg-elevated); border-bottom: 1px solid var(--phoenix-border);">
+                            <h3 style="color: var(--phoenix-orange); margin: 0; font-size: 1rem;">📊 Phoenix AI Results</h3>
+                            <p style="color: var(--phoenix-text-muted); margin: 4px 0 0 0; font-size: 0.8rem;">AI-powered insights for "${query}"</p>
+                        </div>
+                        <div id="mockResultsPanel" style="padding: 1rem; height: calc(100% - 80px); overflow-y: auto;">
+                            <div class="loading">
+                                <div class="loading-dot"></div>
+                                <div class="loading-dot"></div>
+                                <div class="loading-dot"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Right Panel: Live Search -->
+                    <div style="background: var(--phoenix-bg-card); border-radius: 12px; border: 2px solid var(--phoenix-border); overflow: hidden;">
+                        <div style="padding: 1rem; background: var(--phoenix-bg-elevated); border-bottom: 1px solid var(--phoenix-border); display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <h3 style="color: var(--phoenix-orange); margin: 0; font-size: 1rem;">🌐 Live ${engine.charAt(0).toUpperCase() + engine.slice(1)} Results</h3>
+                                <p style="color: var(--phoenix-text-muted); margin: 4px 0 0 0; font-size: 0.8rem;">Real-time search results</p>
+                            </div>
+                            <button onclick="openInNewTab('${searchUrl}')" style="
+                                padding: 4px 8px;
+                                background: var(--phoenix-orange);
+                                color: white;
+                                border: none;
+                                border-radius: 4px;
+                                font-size: 0.75rem;
+                                cursor: pointer;
+                            ">🔗 Open Full</button>
+                        </div>
+                        <iframe 
+                            src="${searchUrl}" 
+                            style="width: 100%; height: calc(100% - 80px); border: none; background: white;" 
+                            frameborder="0"
+                            sandbox="allow-same-origin allow-scripts allow-forms allow-popups allow-popups-to-escape-sandbox"
+                            loading="lazy">
+                        </iframe>
+                    </div>
+                </div>
+            `;
+
+            resultCount.textContent = `Split view: Phoenix AI + ${engine}`;
+            
+            // Load mock results in left panel
+            setTimeout(() => {
+                const mockResults = generateMockResults(query, model);
+                document.getElementById('mockResultsPanel').innerHTML = mockResults.map(result => `
+                    <div style="margin-bottom: 1.5rem; padding: 1rem; background: var(--phoenix-bg-elevated); border-radius: 8px; border: 1px solid var(--phoenix-border);">
+                        <h4 style="color: var(--phoenix-text); margin: 0 0 0.5rem 0; font-size: 0.9rem;">${result.title}</h4>
+                        <p style="color: var(--phoenix-text-muted); font-size: 0.8rem; line-height: 1.4; margin: 0 0 0.5rem 0;">${result.snippet}</p>
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <span style="color: var(--phoenix-orange); font-size: 0.75rem;">${result.domain}</span>
+                            <span style="color: var(--phoenix-orange); font-size: 0.75rem; font-weight: 600;">${result.confidence}% match</span>
+                        </div>
+                    </div>
+                `).join('');
+            }, 1000);
+        }
+
+        // Iframe utility functions
+        function hideIframeLoader() {
+            const loader = document.getElementById('iframeLoader');
+            if (loader) {
+                loader.style.display = 'none';
+            }
+        }
+
+        function toggleIframeFullscreen() {
+            const iframe = document.getElementById('searchIframe');
+            const container = document.getElementById('iframeContainer');
+            
+            if (!iframe || !container) return;
+            
+            if (iframe.style.position === 'fixed') {
+                // Exit fullscreen
+                iframe.style.cssText = 'width: 100%; height: 70vh; border: none; background: white;';
+                container.style.cssText = 'border-radius: 12px; overflow: hidden; border: 2px solid var(--phoenix-border); position: relative;';
+                document.body.style.overflow = 'auto';
+                showNotification('📱 Exited fullscreen mode', 'info');
+            } else {
+                // Enter fullscreen
+                iframe.style.cssText = `
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    width: 100vw;
+                    height: 100vh;
+                    z-index: 10000;
+                    border: none;
+                    background: white;
+                `;
+                container.style.cssText = 'position: relative;';
+                document.body.style.overflow = 'hidden';
+                showNotification('⛶ Entered fullscreen mode - double-click to exit', 'info');
+                
+                // Add double-click to exit fullscreen
+                iframe.ondblclick = toggleIframeFullscreen;
+            }
+        }
+
+        function refreshIframe() {
+            const iframe = document.getElementById('searchIframe');
+            if (iframe) {
+                const currentSrc = iframe.src;
+                iframe.src = '';
+                setTimeout(() => {
+                    iframe.src = currentSrc;
+                    showNotification('🔄 Refreshed embedded search', 'info');
+                }, 100);
+            }
+        }
+
+        function closeEmbedded() {
+            showNotification('✕ Closing embedded view...', 'info');
+            setTimeout(() => {
+                resetToSearchMode();
+            }, 500);
+        }
+
+        function showSearchResults(query, engine, model) {
+            const resultsContainer = document.getElementById('searchResults');
+            const currentEngine = document.getElementById('currentEngine');
+            const currentModel = document.getElementById('currentModel');
+            const resultCount = document.getElementById('resultCount');
+            const resultsContent = document.getElementById('resultsContainer');
+
+            currentEngine.textContent = engine.charAt(0).toUpperCase() + engine.slice(1);
+            currentModel.textContent = model;
+            
+            resultsContainer.classList.remove('hidden');
+
+            // Show loading
+            resultsContent.innerHTML = '<div class="loading"><div class="loading-dot"></div><div class="loading-dot"></div><div class="loading-dot"></div></div>';
+
+            // Simulate search delay and show results
+            setTimeout(() => {
+                const mockResults = generateMockResults(query, model);
+                resultCount.textContent = `${mockResults.length} results`;
+                displayResults(mockResults);
+            }, 1500);
+        }
+
+        function showBingEmbeddedSearch(query, model, searchUrl) {
+            const resultsContainer = document.getElementById('searchResults');
+            const currentEngine = document.getElementById('currentEngine');
+            const currentModel = document.getElementById('currentModel');
+            const resultCount = document.getElementById('resultCount');
+            const resultsContent = document.getElementById('resultsContainer');
+
+            currentEngine.textContent = 'Bing (Embedded)';
+            currentModel.textContent = model;
+            
+            resultsContainer.classList.remove('hidden');
+
+            // Show embedded Bing search with options
+            resultsContent.innerHTML = `
+                <div style="margin-bottom: 1rem; padding: 1rem; background: var(--phoenix-bg-elevated); border-radius: 16px; border: 2px solid var(--phoenix-orange);">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                        <h3 style="color: var(--phoenix-orange); margin: 0;">🔍 Bing Search Results</h3>
+                        <div style="display: flex; gap: 10px;">
+                            <a href="${searchUrl}" target="_blank" style="
+                                padding: 8px 16px; 
+                                background: var(--gradient-phoenix); 
+                                color: white; 
+                                text-decoration: none; 
+                                border-radius: 8px; 
+                                font-size: 0.9rem;
+                                font-weight: 600;
+                            ">🔗 Open in New Tab</a>
+                            <button onclick="toggleFullscreenIframe()" style="
+                                padding: 8px 16px; 
+                                background: var(--phoenix-bg-card); 
+                                color: var(--phoenix-orange);
+                                border: 1px solid var(--phoenix-orange);
+                                border-radius: 8px; 
+                                font-size: 0.9rem;
+                                cursor: pointer;
+                            ">⛶ Fullscreen</button>
+                        </div>
+                    </div>
+                    <p style="color: var(--phoenix-text-muted); margin: 0; font-size: 0.9rem;">
+                        <strong>Enhanced Query:</strong> "${query}" (with ${model} AI assistance)
+                    </p>
+                </div>
+                
+                <div id="iframeContainer" style="border-radius: 12px; overflow: hidden; border: 2px solid var(--phoenix-border);">
+                    <iframe 
+                        id="searchIframe"
+                        src="${searchUrl}" 
+                        style="width: 100%; height: 600px; border: none; background: white;" 
+                        frameborder="0"
+                        sandbox="allow-same-origin allow-scripts allow-forms allow-popups allow-popups-to-escape-sandbox"
+                        loading="lazy">
+                    </iframe>
+                </div>
+                
+                <div style="margin-top: 1rem; text-align: center;">
+                    <p style="color: var(--phoenix-text-muted); font-size: 0.85rem;">
+                        💡 <strong>Tip:</strong> Double-click the iframe to exit fullscreen mode
+                    </p>
+                </div>
+            `;
+
+            resultCount.textContent = 'Live Bing results';
+        }
+
+        function toggleFullscreenIframe() {
+            const iframe = document.getElementById('searchIframe');
+            const container = document.getElementById('iframeContainer');
+            
+            if (iframe.style.position === 'fixed') {
+                // Exit fullscreen
+                iframe.style.cssText = 'width: 100%; height: 600px; border: none; background: white;';
+                container.style.cssText = 'border-radius: 12px; overflow: hidden; border: 2px solid var(--phoenix-border);';
+                document.body.style.overflow = 'auto';
+            } else {
+                // Enter fullscreen
+                iframe.style.cssText = `
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    width: 100vw;
+                    height: 100vh;
+                    z-index: 9999;
+                    border: none;
+                    background: white;
+                `;
+                container.style.cssText = 'position: relative;';
+                document.body.style.overflow = 'hidden';
+                
+                // Add double-click to exit fullscreen
+                iframe.ondblclick = toggleFullscreenIframe;
+            }
+        }
+
+        function showSearchResultsWithLink(query, engine, model, searchUrl) {
+            const resultsContainer = document.getElementById('searchResults');
+            const currentEngine = document.getElementById('currentEngine');
+            const currentModel = document.getElementById('currentModel');
+            const resultCount = document.getElementById('resultCount');
+            const resultsContent = document.getElementById('resultsContainer');
+
+            currentEngine.textContent = engine.charAt(0).toUpperCase() + engine.slice(1);
+            currentModel.textContent = model;
+            
+            resultsContainer.classList.remove('hidden');
+
+            // Show popup blocked message with direct link
+            resultsContent.innerHTML = `
+                <div style="text-align: center; padding: 2rem; background: var(--phoenix-bg-elevated); border-radius: 16px; border: 2px solid var(--phoenix-orange);">
+                    <h3 style="color: var(--phoenix-orange); margin-bottom: 1rem;">🚫 Popup Blocked</h3>
+                    <p style="color: var(--phoenix-text-muted); margin-bottom: 1.5rem;">
+                        Your browser blocked the search popup. Click the button below to open ${engine.charAt(0).toUpperCase() + engine.slice(1)} search:
+                    </p>
+                    <a href="${searchUrl}" target="_blank" style="
+                        display: inline-block;
+                        padding: 12px 24px; 
+                        background: var(--gradient-phoenix); 
+                        color: white; 
+                        text-decoration: none; 
+                        border-radius: 12px; 
+                        font-weight: 600;
+                        transition: all 0.3s ease;
+                    " onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
+                        🔍 Open ${engine.charAt(0).toUpperCase() + engine.slice(1)} Search
+                    </a>
+                    <p style="color: var(--phoenix-text-muted); margin-top: 1rem; font-size: 0.9rem;">
+                        <strong>Enhanced Query:</strong> "${query}" (with ${model} AI assistance)
+                    </p>
+                </div>
+            `;
+
+            resultCount.textContent = '1 search link';
+            
+            // Also show mock results below
+            setTimeout(() => {
+                const mockResults = generateMockResults(query, model);
+                resultsContent.innerHTML += `
+                    <div style="margin-top: 2rem;">
+                        <h3 style="color: var(--phoenix-orange); margin-bottom: 1rem;">📊 Preview Results (Simulated)</h3>
+                        ${mockResults.map(result => `
+                            <div class="result-card">
+                                <a href="${result.url}" target="_blank" class="result-title">${result.title}</a>
+                                <div class="result-url">
+                                    <span>🔗</span>
+                                    <span>${result.domain}</span>
+                                    <span style="margin-left: auto; font-size: 0.8rem; color: var(--phoenix-orange);">${result.confidence}% match</span>
+                                </div>
+                                <div class="result-snippet">${result.snippet}</div>
+                                <div class="result-actions">
+                                    <button class="result-action" onclick="favoriteResult(${result.id})">⭐ Favorite</button>
+                                    <button class="result-action" onclick="copyResult('${result.url}')">📋 Copy Link</button>
+                                    <button class="result-action" onclick="shareResult('${result.title}', '${result.url}')">📤 Share</button>
+                                    <button class="result-action" onclick="newTabResult('${result.url}')">🔗 New Tab</button>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            }, 500);
+        }
+
+        function generateMockResults(query, model) {
+            return [
+                {
+                    id: 1,
+                    title: `${query} - Complete Guide and Tutorial`,
+                    url: `https://example.com/${query.toLowerCase().replace(/\s+/g, '-')}`,
+                    domain: 'example.com',
+                    snippet: `Everything you need to know about ${query}. Comprehensive guide with examples, best practices, and expert insights powered by ${model}.`,
+                    confidence: 95
+                },
+                {
+                    id: 2,
+                    title: `Advanced ${query} Techniques and Methods`,
+                    url: `https://docs.example.com/${query.toLowerCase()}`,
+                    domain: 'docs.example.com',
+                    snippet: `Deep dive into advanced ${query} techniques. Learn from industry experts and discover cutting-edge approaches analyzed by ${model}.`,
+                    confidence: 88
+                },
+                {
+                    id: 3,
+                    title: `${query} Tools and Resources Collection`,
+                    url: `https://tools.example.com/${query.toLowerCase()}`,
+                    domain: 'tools.example.com',
+                    snippet: `Curated collection of the best ${query} tools and resources. Updated regularly with the latest innovations in the field.`,
+                    confidence: 82
+                },
+                {
+                    id: 4,
+                    title: `${query} Best Practices and Case Studies`,
+                    url: `https://research.example.com/${query.toLowerCase()}`,
+                    domain: 'research.example.com',
+                    snippet: `Real-world case studies and best practices for ${query}. Learn from successful implementations and avoid common pitfalls.`,
+                    confidence: 79
+                }
+            ];
+        }
+
+        function displayResults(results) {
+            const container = document.getElementById('resultsContainer');
+            container.innerHTML = results.map(result => `
+                <div class="result-card">
+                    <a href="${result.url}" target="_blank" class="result-title">${result.title}</a>
+                    <div class="result-url">
+                        <span>🔗</span>
+                        <span>${result.domain}</span>
+                        <span style="margin-left: auto; font-size: 0.8rem; color: var(--phoenix-orange);">${result.confidence}% match</span>
+                    </div>
+                    <div class="result-snippet">${result.snippet}</div>
+                    <div class="result-actions">
+                        <button class="result-action" onclick="favoriteResult(${result.id})">⭐ Favorite</button>
+                        <button class="result-action" onclick="copyResult('${result.url}')">📋 Copy Link</button>
+                        <button class="result-action" onclick="shareResult('${result.title}', '${result.url}')">📤 Share</button>
+                        <button class="result-action" onclick="newTabResult('${result.url}')">🔗 New Tab</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function selectModel(model) {
+            selectedModel = model;
+            document.querySelectorAll('.model-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            document.querySelector(`[data-model="${model}"]`).classList.add('selected');
+            document.getElementById('chatModel').textContent = model;
+        }
+
+        function handleVoiceSearch() {
+            // Check for speech recognition support
+            if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+                showNotification('Voice search not supported in this browser. Please use Chrome, Edge, or Safari.', 'error');
+                return;
+            }
+
+            const voiceBtn = document.getElementById('voiceBtn');
+            
+            // If already listening, stop
+            if (isVoiceListening) {
+                stopVoiceRecognition();
+                return;
+            }
+
+            try {
+                const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+                const recognition = new SpeechRecognition();
+                
+                // Configure recognition
+                recognition.lang = 'en-US';
+                recognition.continuous = false;
+                recognition.interimResults = true;
+                recognition.maxAlternatives = 1;
+
+                recognition.onstart = () => {
+                    console.log('🎤 Voice recognition started');
+                    isVoiceListening = true;
+                    voiceBtn.classList.add('listening');
+                    voiceBtn.innerHTML = '<span style="animation: pulse 1s infinite;">🎤</span> Listening...';
+                    showNotification('🎤 Voice search started - speak now!', 'info');
+                };
+
+                recognition.onresult = (event) => {
+                    console.log('📝 Voice recognition result:', event.results);
+                    let transcript = '';
+                    
+                    for (let i = event.resultIndex; i < event.results.length; i++) {
+                        if (event.results[i].isFinal) {
+                            transcript = event.results[i][0].transcript.trim();
+                            console.log('✅ Final transcript:', transcript);
+                            
+                            if (transcript) {
+                                document.getElementById('searchInput').value = transcript;
+                                showNotification(`🔍 Voice search: "${transcript}"`, 'success');
+                                
+                                // Auto-search after voice input
+                                setTimeout(() => {
+                                    performSearch(transcript);
+                                }, 500);
+                            }
+                        } else {
+                            // Show interim results
+                            const interimTranscript = event.results[i][0].transcript;
+                            document.getElementById('searchInput').value = interimTranscript;
+                        }
+                    }
+                };
+
+                recognition.onerror = (event) => {
+                    console.error('❌ Voice recognition error:', event.error);
+                    let errorMessage = '❌ Voice search failed. ';
+                    
+                    switch(event.error) {
+                        case 'network':
+                            errorMessage += 'Network error. Check your internet connection.';
+                            break;
+                        case 'not-allowed':
+                            errorMessage += 'Microphone access denied. Please allow microphone access and try again.';
+                            break;
+                        case 'no-speech':
+                            errorMessage += 'No speech detected. Please speak clearly and try again.';
+                            break;
+                        case 'audio-capture':
+                            errorMessage += 'No microphone found. Please check your audio setup.';
+                            break;
+                        case 'service-not-allowed':
+                            errorMessage += 'Speech service not allowed. Please enable speech services.';
+                            break;
+                        default:
+                            errorMessage += `Unknown error (${event.error}). Please try again.`;
+                    }
+                    
+                    showNotification(errorMessage, 'error');
+                    stopVoiceRecognition();
+                };
+
+                recognition.onend = () => {
+                    console.log('🔚 Voice recognition ended');
+                    stopVoiceRecognition();
+                };
+
+                // Start recognition
+                console.log('🚀 Starting voice recognition...');
+                recognition.start();
+                window.currentRecognition = recognition; // Store reference for stopping
+                
+            } catch (error) {
+                console.error('💥 Voice recognition setup error:', error);
+                showNotification('Voice search initialization failed: ' + error.message, 'error');
+                stopVoiceRecognition();
+            }
+        }
+
+        function stopVoiceRecognition() {
+            isVoiceListening = false;
+            const voiceBtn = document.getElementById('voiceBtn');
+            voiceBtn.classList.remove('listening');
+            voiceBtn.innerHTML = '<span>🎤</span> Voice';
+            
+            if (window.currentRecognition) {
+                try {
+                    window.currentRecognition.stop();
+                    window.currentRecognition = null;
+                } catch (error) {
+                    console.error('Error stopping recognition:', error);
+                }
+            }
+        }
+
+        // Enhanced notification system
+        function showNotification(message, type = 'info') {
+            // Remove existing notifications
+            const existingNotification = document.querySelector('.notification');
+            if (existingNotification) {
+                existingNotification.remove();
+            }
+
+            const notification = document.createElement('div');
+            notification.className = `notification notification-${type}`;
+            
+            // Create notification content
+            const icon = type === 'error' ? '❌' : type === 'success' ? '✅' : 'ℹ️';
+            notification.innerHTML = `
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <span style="font-size: 16px;">${icon}</span>
+                    <span>${message}</span>
+                </div>
+            `;
+            
+            // Style the notification
+            const colors = {
+                'error': '#ff4444',
+                'success': '#44ff44', 
+                'info': '#ff9d2f',
+                'warning': '#ffaa00'
+            };
+            
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: ${colors[type] || colors.info};
+                color: white;
+                padding: 16px 20px;
+                border-radius: 12px;
+                box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+                z-index: 10000;
+                font-size: 14px;
+                font-weight: 500;
+                max-width: 350px;
+                word-wrap: break-word;
+                animation: slideInRight 0.3s ease-out;
+                border: 2px solid rgba(255,255,255,0.2);
+            `;
+
+            document.body.appendChild(notification);
+            
+            // Auto-remove after 5 seconds
+            setTimeout(() => {
+                if (notification && notification.parentNode) {
+                    notification.style.animation = 'slideOutRight 0.3s ease-in';
+                    setTimeout(() => {
+                        if (notification && notification.parentNode) {
+                            notification.remove();
+                        }
+                    }, 300);
+                }
+            }, 5000);
+
+            // Click to dismiss
+            notification.addEventListener('click', () => {
+                notification.style.animation = 'slideOutRight 0.3s ease-in';
+                setTimeout(() => {
+                    if (notification && notification.parentNode) {
+                        notification.remove();
+                    }
+                }, 300);
+            });
+        }
+
+        // Tab Management
+        function renderTabs() {
+            const tabBar = document.getElementById('tabBar');
+            tabBar.innerHTML = tabs.map(tab => `
+                <div class="tab ${tab.id === activeTabId ? 'active' : ''}" data-tab-id="${tab.id}">
+                    <span>${tab.title}</span>
+                    <div style="display: flex; align-items: center; gap: 4px; font-size: 0.75rem; opacity: 0.7;">
+                        <span>${tab.engine}</span>
+                        <span>•</span>
+                        <span>${tab.model}</span>
+                    </div>
+                    ${tabs.length > 1 ? '<button class="tab-close">×</button>' : ''}
+                </div>
+            `).join('') + '<button class="new-tab-btn">+</button>';
+        }
+
+        function addNewTab() {
+            const newTab = createTab();
+            tabs.push(newTab);
+            activeTabId = newTab.id;
+            renderTabs();
+            resetToSearchMode();
+        }
+
+        function closeTab(tabId) {
+            const tabIndex = tabs.findIndex(tab => tab.id == tabId);
+            if (tabIndex !== -1) {
+                tabs.splice(tabIndex, 1);
+                
+                if (tabs.length === 0) {
+                    addNewTab();
+                } else if (activeTabId == tabId) {
+                    activeTabId = tabs[0].id;
+                }
+                
+                renderTabs();
+                loadTabContent();
+            }
+        }
+
+        function switchToTab(tabId) {
+            activeTabId = tabId;
+            renderTabs();
+            loadTabContent();
+        }
+
+        function loadTabContent() {
+            const activeTab = tabs.find(tab => tab.id === activeTabId);
+            if (activeTab) {
+                document.getElementById('searchInput').value = activeTab.query;
+                document.getElementById('engineSelect').value = activeTab.engine;
+                selectModel(activeTab.model);
+
+                if (activeTab.hasResults && activeTab.query) {
+                    showSearchResults(activeTab.query, activeTab.engine, activeTab.model);
+                } else {
+                    resetToSearchMode();
+                }
+            }
+        }
+
+        function resetToSearchMode() {
+            document.getElementById('modelSelector').classList.remove('hidden');
+            document.getElementById('header').classList.remove('hidden');
+            document.getElementById('searchResults').classList.add('hidden');
+            document.getElementById('searchInput').value = '';
+        }
+
+        // Chat Functionality
+        function toggleChat() {
+            const chatPanel = document.getElementById('chatPanel');
+            chatPanel.classList.toggle('active');
+        }
+
+        function handleChatMessage(e) {
+            e.preventDefault();
+            const chatInput = document.getElementById('chatInput');
+            const message = chatInput.value.trim();
+            
+            if (message) {
+                addChatMessage('user', message);
+                chatInput.value = '';
+                
+                // Simulate AI response
+                setTimeout(() => {
+                    const response = generateAIResponse(message);
+                    addChatMessage('bot', response);
+                }, 1000);
+            }
+        }
+
+        function addChatMessage(type, content) {
+            const messagesContainer = document.getElementById('chatMessages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${type}`;
+            
+            messageDiv.innerHTML = `
+                <div class="message-avatar">${type === 'bot' ? '🤖' : '👤'}</div>
+                <div class="message-content">${content}</div>
+            `;
+            
+            messagesContainer.appendChild(messageDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            
+            chatMessages.push({ type, content, timestamp: new Date() });
+        }
+
+        function generateAIResponse(input) {
+            const lowerInput = input.toLowerCase();
+            
+            const responses = {
+                'hello': `Hello! I'm Phoenix AI using the ${selectedModel} model. How can I help you with your search today?`,
+                'help': `I can help you with intelligent search queries! Try asking me about specific topics, or let me suggest better search terms for your queries.`,
+                'search': `I'd be happy to help you search! What topic are you interested in? I can suggest the best search terms and approach.`,
+                'code': `For coding questions, I recommend using Phoenix-3 model as it's specialized for technical queries. What programming topic interests you?`,
+                'creative': `For creative ideas, Phoenix-2 is perfect! It's designed for brainstorming and innovative thinking. What creative project are you working on?`,
+                'research': `Phoenix-4 is ideal for research! It's designed for academic and in-depth analysis. What research topic can I help you with?`,
+                'default': `That's interesting! As ${selectedModel}, I suggest we refine your search query. Would you like me to help you find more specific information about "${input}"?`
+            };
+
+            for (const [key, response] of Object.entries(responses)) {
+                if (key !== 'default' && lowerInput.includes(key)) {
+                    return response;
+                }
+            }
+            
+            return responses.default;
+        }
+
+        // Result Actions
+        function favoriteResult(id) {
+            alert('Added to favorites!');
+        }
+
+        function copyResult(url) {
+            navigator.clipboard.writeText(url).then(() => {
+                alert('Link copied to clipboard!');
+            });
+        }
+
+        function shareResult(title, url) {
+            if (navigator.share) {
+                navigator.share({ title, url });
+            } else {
+                copyResult(url);
+            }
+        }
+
+        function newTabResult(url) {
+            window.open(url, '_blank');
+        }
+
+        // Data Persistence
+        function saveData() {
+            localStorage.setItem('phoenix-tabs', JSON.stringify(tabs));
+            localStorage.setItem('phoenix-active-tab', activeTabId);
+            localStorage.setItem('phoenix-model', selectedModel);
+            localStorage.setItem('phoenix-history', JSON.stringify(searchHistory));
+            localStorage.setItem('phoenix-chat', JSON.stringify(chatMessages));
+        }
+
+        function loadSavedData() {
+            const savedTabs = localStorage.getItem('phoenix-tabs');
+            const savedActiveTab = localStorage.getItem('phoenix-active-tab');
+            const savedModel = localStorage.getItem('phoenix-model');
+            const savedHistory = localStorage.getItem('phoenix-history');
+            const savedChat = localStorage.getItem('phoenix-chat');
+
+            if (savedTabs) {
+                try {
+                    tabs = JSON.parse(savedTabs);
+                    if (savedActiveTab) {
+                        activeTabId = savedActiveTab;
+                    }
+                    renderTabs();
+                    loadTabContent();
+                } catch (e) {
+                    console.error('Error loading saved tabs:', e);
+                }
+            }
+
+            if (savedModel) {
+                selectModel(savedModel);
+            }
+
+            if (savedHistory) {
+                try {
+                    searchHistory = JSON.parse(savedHistory);
+                } catch (e) {
+                    console.error('Error loading search history:', e);
+                }
+            }
+
+            if (savedChat) {
+                try {
+                    chatMessages = JSON.parse(savedChat);
+                    // Restore chat messages
+                    chatMessages.forEach(msg => {
+                        addChatMessage(msg.type, msg.content);
+                    });
+                } catch (e) {
+                    console.error('Error loading chat history:', e);
+                }
+            }
+        }
+
+        // Save data periodically
+        setInterval(saveData, 30000); // Save every 30 seconds
+
+        // Save data before page unload
+        window.addEventListener('beforeunload', saveData);
+
+        // ==================== ADVANCED BROWSER FEATURES ====================
+
+        // Navigation Controls
+        function goBack() {
+            if (window.history.length > 1) {
+                window.history.back();
+                showNotification('🔙 Going back...', 'info');
+            } else {
+                showNotification('🚫 No previous page', 'warning');
+            }
+        }
+
+        function goForward() {
+            window.history.forward();
+            showNotification('🔜 Going forward...', 'info');
+        }
+
+        function refreshPage() {
+            const iframe = document.getElementById('searchIframe');
+            if (iframe && iframe.style.display !== 'none') {
+                refreshIframe();
+            } else {
+                location.reload();
+            }
+        }
+
+        function goHome() {
+            resetToSearchMode();
+            showNotification('🏠 Returning to Phoenix Search home', 'success');
+        }
+
+        // Keyboard Shortcuts
+        function handleKeyboardShortcuts(e) {
+            // Ctrl+F - Find in page
+            if (e.ctrlKey && e.key === 'f') {
+                e.preventDefault();
+                toggleFindBar();
+            }
+            // Ctrl+R - Refresh
+            else if (e.ctrlKey && e.key === 'r') {
+                e.preventDefault();
+                refreshPage();
+            }
+            // Ctrl+H - History
+            else if (e.ctrlKey && e.key === 'h') {
+                e.preventDefault();
+                toggleHistory();
+            }
+            // Ctrl+Shift+B - Bookmarks
+            else if (e.ctrlKey && e.shiftKey && e.key === 'B') {
+                e.preventDefault();
+                toggleBookmarks();
+            }
+            // Ctrl+J - Downloads
+            else if (e.ctrlKey && e.key === 'j') {
+                e.preventDefault();
+                toggleDownloads();
+            }
+            // Ctrl+P - Print
+            else if (e.ctrlKey && e.key === 'p') {
+                e.preventDefault();
+                printPage();
+            }
+            // F12 - Developer Tools
+            else if (e.key === 'F12') {
+                e.preventDefault();
+                toggleDevTools();
+            }
+            // Ctrl+Plus/Minus - Zoom
+            else if (e.ctrlKey && (e.key === '+' || e.key === '=')) {
+                e.preventDefault();
+                zoomIn();
+            }
+            else if (e.ctrlKey && e.key === '-') {
+                e.preventDefault();
+                zoomOut();
+            }
+            else if (e.ctrlKey && e.key === '0') {
+                e.preventDefault();
+                resetZoom();
+            }
+            // Escape - Close overlays
+            else if (e.key === 'Escape') {
+                closeFindBar();
+                closeSidebar();
+                document.getElementById('zoomControls').classList.remove('active');
+                document.getElementById('securityIndicator').style.display = 'none';
+            }
+        }
+
+        // Bookmarks Management
+        function toggleBookmarks() {
+            if (currentSidebar === 'bookmarks') {
+                closeSidebar();
+            } else {
+                openSidebar('bookmarks');
+            }
+        }
+
+        function addBookmark(title, url) {
+            const bookmark = {
+                id: Date.now(),
+                title: title || 'Untitled',
+                url: url || window.location.href,
+                date: new Date(),
+                folder: 'default'
+            };
+            bookmarks.unshift(bookmark);
+            saveBrowserData();
+            showNotification('⭐ Bookmark added!', 'success');
+            if (currentSidebar === 'bookmarks') {
+                loadBookmarks();
+            }
+        }
+
+        function removeBookmark(id) {
+            bookmarks = bookmarks.filter(b => b.id !== id);
+            saveBrowserData();
+            showNotification('🗑️ Bookmark removed', 'info');
+            loadBookmarks();
+        }
+
+        function loadBookmarks() {
+            const content = document.getElementById('sidebarContent');
+            if (bookmarks.length === 0) {
+                content.innerHTML = `
+                    <div style="text-align: center; padding: 2rem; color: var(--phoenix-text-muted);">
+                        <h3>📝 No Bookmarks Yet</h3>
+                        <p>Add bookmarks to keep track of your favorite searches and sites.</p>
+                        <button onclick="addBookmark('Phoenix Search', window.location.href)" class="toolbar-btn">
+                            ⭐ Bookmark This Page
+                        </button>
+                    </div>
+                `;
+            } else {
+                content.innerHTML = `
+                    <div style="margin-bottom: 1rem;">
+                        <button onclick="addBookmark('Phoenix Search', window.location.href)" class="toolbar-btn" style="width: 100%;">
+                            ⭐ Add Current Page
+                        </button>
+                    </div>
+                    ${bookmarks.map(bookmark => `
+                        <div class="bookmark-item">
+                            <div class="bookmark-title">${bookmark.title}</div>
+                            <div class="bookmark-url">${bookmark.url}</div>
+                            <div style="margin-top: 8px; display: flex; justify-content: space-between; align-items: center;">
+                                <small style="color: var(--phoenix-text-muted);">${bookmark.date.toLocaleDateString()}</small>
+                                <button onclick="removeBookmark(${bookmark.id})" style="background: none; border: none; color: var(--phoenix-text-muted); cursor: pointer;">🗑️</button>
+                            </div>
+                        </div>
+                    `).join('')}
+                `;
+            }
+        }
+        
+        
+
+        // History Management
+        function toggleHistory() {
+            if (currentSidebar === 'history') {
+                closeSidebar();
+            } else {
+                openSidebar('history');
+            }
+        }
+
+        function addToHistory(title, url, query = '') {
+            const historyItem = {
+                id: Date.now(),
+                title: title || 'Phoenix Search',
+                url: url || window.location.href,
+                query: query,
+                date: new Date(),
+                visits: 1
+            };
+            
+            // Check if item already exists
+            const existingIndex = browsingHistory.findIndex(h => h.url === historyItem.url);
+            if (existingIndex !== -1) {
+                browsingHistory[existingIndex].visits++;
+                browsingHistory[existingIndex].date = new Date();
+            } else {
+                browsingHistory.unshift(historyItem);
+            }
+            
+            // Keep only last 100 items
+            browsingHistory = browsingHistory.slice(0, 100);
+            saveBrowserData();
+        }
+
+        function clearHistory() {
+            if (confirm('Clear all browsing history? This cannot be undone.')) {
+                browsingHistory = [];
+                saveBrowserData();
+                showNotification('🗑️ History cleared', 'info');
+                loadHistory();
+            }
+        }
+
+        function loadHistory() {
+            const content = document.getElementById('sidebarContent');
+            if (browsingHistory.length === 0) {
+                content.innerHTML = `
+                    <div style="text-align: center; padding: 2rem; color: var(--phoenix-text-muted);">
+                        <h3>📚 No History</h3>
+                        <p>Your browsing history will appear here as you search and navigate.</p>
+                    </div>
+                `;
+            } else {
+                content.innerHTML = `
+                    <div style="margin-bottom: 1rem;">
+                        <button onclick="clearHistory()" class="toolbar-btn" style="width: 100%; background: var(--phoenix-bg-card); color: var(--phoenix-text-muted);">
+                            🗑️ Clear History
+                        </button>
+                    </div>
+                    ${browsingHistory.map(item => `
+                        <div class="history-item" onclick="window.open('${item.url}', '_blank')">
+                            <div class="history-title">${item.title}</div>
+                            <div class="history-url">${item.url}</div>
+                            ${item.query ? `<div style="color: var(--phoenix-orange); font-size: 0.8rem; margin-top: 4px;">Search: "${item.query}"</div>` : ''}
+                            <div style="margin-top: 8px; display: flex; justify-content: space-between; align-items: center;">
+                                <small style="color: var(--phoenix-text-muted);">${item.date.toLocaleDateString()}</small>
+                                <small style="color: var(--phoenix-text-muted);">${item.visits} visits</small>
+                            </div>
+                        </div>
+                    `).join('')}
+                `;
+            }
+        }
+
+        // Downloads Management
+        function toggleDownloads() {
+            if (currentSidebar === 'downloads') {
+                closeSidebar();
+            } else {
+                openSidebar('downloads');
+            }
+        }
+
+        function addDownload(filename, url, type = 'file') {
+            const download = {
+                id: Date.now(),
+                filename: filename,
+                url: url,
+                type: type,
+                date: new Date(),
+                size: Math.floor(Math.random() * 10000) + 'KB', // Mock size
+                status: 'completed'
+            };
+            downloads.unshift(download);
+            saveBrowserData();
+            showNotification(`💾 Downloaded: ${filename}`, 'success');
+        }
+
+        function loadDownloads() {
+            const content = document.getElementById('sidebarContent');
+            if (downloads.length === 0) {
+                content.innerHTML = `
+                    <div style="text-align: center; padding: 2rem; color: var(--phoenix-text-muted);">
+                        <h3>💾 No Downloads</h3>
+                        <p>Your downloads will appear here when you save files from search results.</p>
+                        <button onclick="simulateDownload()" class="toolbar-btn">
+                            💾 Simulate Download
+                        </button>
+                    </div>
+                `;
+            } else {
+                content.innerHTML = downloads.map(download => `
+                    <div class="history-item">
+                        <div class="history-title">📄 ${download.filename}</div>
+                        <div style="color: var(--phoenix-text-muted); font-size: 0.8rem; margin: 4px 0;">
+                            ${download.size} • ${download.type} • ${download.status}
+                        </div>
+                        <div style="margin-top: 8px; display: flex; justify-content: space-between; align-items: center;">
+                            <small style="color: var(--phoenix-text-muted);">${download.date.toLocaleDateString()}</small>
+                            <button onclick="window.open('${download.url}', '_blank')" style="background: none; border: none; color: var(--phoenix-orange); cursor: pointer; font-size: 0.8rem;">🔗 Open</button>
+                        </div>
+                    </div>
+                `).join('');
+            }
+        }
+
+        function simulateDownload() {
+            const mockFiles = [
+                'phoenix-search-results.pdf',
+                'research-document.docx',
+                'data-analysis.xlsx',
+                'presentation.pptx',
+                'image-collection.zip'
+            ];
+            const randomFile = mockFiles[Math.floor(Math.random() * mockFiles.length)];
+            addDownload(randomFile, '#', 'document');
+            if (currentSidebar === 'downloads') {
+                loadDownloads();
+            }
+        }
+
+        // Sidebar Management
+        function openSidebar(type) {
+            currentSidebar = type;
+            const sidebar = document.getElementById('browserSidebar');
+            const title = document.getElementById('sidebarTitle');
+            
+            sidebar.classList.add('active');
+            
+            switch(type) {
+                case 'bookmarks':
+                    title.textContent = '⭐ Bookmarks';
+                    loadBookmarks();
+                    break;
+                case 'history':
+                    title.textContent = '📚 History';
+                    loadHistory();
+                    break;
+                case 'downloads':
+                    title.textContent = '💾 Downloads';
+                    loadDownloads();
+                    break;
+            }
+        }
+
+        function closeSidebar() {
+            currentSidebar = null;
+            document.getElementById('browserSidebar').classList.remove('active');
+        }
+
+        // Find in Page
+        function toggleFindBar() {
+            const findBar = document.getElementById('findBar');
+            if (findBar.classList.contains('active')) {
+                closeFindBar();
+            } else {
+                findBar.classList.add('active');
+                document.getElementById('findInput').focus();
+            }
+        }
+
+        function closeFindBar() {
+            document.getElementById('findBar').classList.remove('active');
+            // Clear highlights
+            clearSearchHighlights();
+        }
+
+        function performFind() {
+            const query = document.getElementById('findInput').value;
+            if (query.length > 0) {
+                highlightSearchResults(query);
+            } else {
+                clearSearchHighlights();
+            }
+        }
+
+        function findNext() {
+            // Simulate find next
+            showNotification('🔍 Next result', 'info');
+        }
+
+        function findPrev() {
+            // Simulate find previous
+            showNotification('🔍 Previous result', 'info');
+        }
+
+        function highlightSearchResults(query) {
+            // Mock highlighting - in a real browser this would highlight text
+            showNotification(`🔍 Found "${query}" in page`, 'info');
+        }
+
+        function clearSearchHighlights() {
+            // Clear any highlights
+        }
+
+        // Zoom Controls
+        function toggleZoomControls() {
+            const zoomControls = document.getElementById('zoomControls');
+            zoomControls.classList.toggle('active');
+        }
+
+        function zoomIn() {
+            currentZoom = Math.min(currentZoom + 10, 200);
+            applyZoom();
+        }
+
+        function zoomOut() {
+            currentZoom = Math.max(currentZoom - 10, 50);
+            applyZoom();
+        }
+
+        function resetZoom() {
+            currentZoom = 100;
+            applyZoom();
+        }
+
+        function applyZoom() {
+            document.body.style.zoom = currentZoom + '%';
+            document.getElementById('zoomLevel').textContent = currentZoom + '%';
+            showNotification(`🔍 Zoom: ${currentZoom}%`, 'info');
+        }
+
+        // Screenshot Tool
+        function takeScreenshot() {
+            // In a real browser, this would capture the screen
+            showNotification('📸 Screenshot saved to downloads', 'success');
+            addDownload('phoenix-search-screenshot.png', '#', 'image');
+        }
+
+        // QR Code Generator
+        function generateQR() {
+            const url = window.location.href;
+            const qrData = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(url)}`;
+            
+            const popup = window.open('', '_blank', 'width=250,height=250');
+            popup.document.write(`
+                <html>
+                    <head><title>QR Code</title></head>
+                    <body style="margin:0; padding:20px; text-align:center; font-family:Arial;">
+                        <h3>📱 QR Code</h3>
+                        <img src="${qrData}" alt="QR Code" style="border:1px solid #ccc;">
+                        <p style="font-size:12px; word-break:break-all;">${url}</p>
+                    </body>
+                </html>
+            `);
+            showNotification('📱 QR code generated!', 'success');
+        }
+
+        // Reader Mode
+        function toggleReaderMode() {
+            const readerMode = document.getElementById('readerMode');
+            readerMode.classList.toggle('active');
+            
+            if (readerMode.classList.contains('active')) {
+                showNotification('📖 Entered reader mode', 'info');
+            } else {
+                showNotification('📖 Exited reader mode', 'info');
+            }
+        }
+
+        // Translation
+        function translatePage() {
+            // Mock translation - in a real browser this would use Google Translate
+            showNotification('🌐 Page translated to English', 'success');
+        }
+
+        // Print
+        function printPage() {
+            window.print();
+        }
+
+        // Developer Tools
+        function toggleDevTools() {
+            // Open browser dev tools (this will work in most browsers)
+            showNotification('🛠️ Opening Developer Tools...', 'info');
+            // In a real implementation, this would toggle an embedded dev tools panel
+        }
+
+        // Theme Toggle
+        function toggleTheme() {
+            isDarkTheme = !isDarkTheme;
+            const themeIcon = document.getElementById('themeIcon');
+            
+            if (isDarkTheme) {
+                themeIcon.textContent = '🌙';
+                document.documentElement.style.filter = '';
+                showNotification('🌙 Dark theme enabled', 'info');
+            } else {
+                themeIcon.textContent = '☀️';
+                document.documentElement.style.filter = 'invert(1) hue-rotate(180deg)';
+                showNotification('☀️ Light theme enabled', 'info');
+            }
+        }
+
+        // Security Info
+        function showSecurity() {
+            const indicator = document.getElementById('securityIndicator');
+            indicator.style.display = indicator.style.display === 'block' ? 'none' : 'block';
+        }
+
+        // Floating Tools
+        function scrollToTop() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            showNotification('⬆️ Scrolled to top', 'info');
+        }
+
+        function togglePictureInPicture() {
+            showNotification('📺 Picture-in-picture mode (simulated)', 'info');
+        }
+
+        function copyPageURL() {
+            navigator.clipboard.writeText(window.location.href).then(() => {
+                showNotification('🔗 Page URL copied to clipboard', 'success');
+            });
+        }
+
+        function shareCurrentPage() {
+            if (navigator.share) {
+                navigator.share({
+                    title: document.title,
+                    url: window.location.href
+                });
+            } else {
+                copyPageURL();
+            }
+        }
+
+        // Data Management
+        function saveBrowserData() {
+            localStorage.setItem('phoenix-bookmarks', JSON.stringify(bookmarks));
+            localStorage.setItem('phoenix-browsing-history', JSON.stringify(browsingHistory));
+            localStorage.setItem('phoenix-downloads', JSON.stringify(downloads));
+            localStorage.setItem('phoenix-zoom', currentZoom.toString());
+            localStorage.setItem('phoenix-dark-theme', isDarkTheme.toString());
+        }
+
+        function loadBrowserData() {
+            const savedBookmarks = localStorage.getItem('phoenix-bookmarks');
+            const savedHistory = localStorage.getItem('phoenix-browsing-history');
+            const savedDownloads = localStorage.getItem('phoenix-downloads');
+            const savedZoom = localStorage.getItem('phoenix-zoom');
+            const savedTheme = localStorage.getItem('phoenix-dark-theme');
+
+            if (savedBookmarks) {
+                try {
+                    bookmarks = JSON.parse(savedBookmarks);
+                } catch (e) {
+                    console.error('Error loading bookmarks:', e);
+                }
+            }
+
+            if (savedHistory) {
+                try {
+                    browsingHistory = JSON.parse(savedHistory);
+                } catch (e) {
+                    console.error('Error loading history:', e);
+                }
+            }
+
+            if (savedDownloads) {
+                try {
+                    downloads = JSON.parse(savedDownloads);
+                } catch (e) {
+                    console.error('Error loading downloads:', e);
+                }
+            }
+
+            if (savedZoom) {
+                currentZoom = parseInt(savedZoom) || 100;
+                applyZoom();
+            }
+
+            if (savedTheme) {
+                isDarkTheme = savedTheme === 'true';
+                if (!isDarkTheme) {
+                    toggleTheme();
+                }
+            }
+
+            // Initialize with some default bookmarks
+            if (bookmarks.length === 0) {
+                bookmarks = [
+                    {
+                        id: 1,
+                        title: 'Phoenix Search Home',
+                        url: window.location.href,
+                        date: new Date(),
+                        folder: 'default'
+                    }
+                ];
+            }
+        }
+
+        // Auto-save browser data periodically
+        setInterval(saveBrowserData, 60000); // Save every minute
+        </script>
+</body>
+</html>        
